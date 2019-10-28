@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.autobuild.dao.CompanyMapper" >
+	<insert id="insert" parameterType="company" useGeneratedKeys="true" keyProperty="id">  
+        insert into Company(name) values(#{name})  
+	</insert>
+
+    <resultMap type="company" id="companyMap"> 
+    	<id property="id" column="id" />
+    	<association property="componentList" column="id" select="unionComponentList"/>
+    </resultMap>
+	<select id="listPage" parameterType="java.util.Map" resultMap="companyMap">
+		SELECT
+			Company.id,
+			Company.name,
+			Company.createTime
+		FROM
+			Company
+		<where>     
+	        <if test="id!=null and id!=''">     
+	            AND Company.id = #{id}
+	        </if>     
+	        <if test="name!= null and name!=''">     
+	            AND Company.name LIKE CONCAT(CONCAT('%', #{name}),'%')
+	        </if>
+	        <if test="createTimeStart!=null and createTimeStart!=''">
+				AND Company.createTime &gt;= date_format(#{createTimeStart},'%Y-%m-%d 00:00:00')
+			</if>
+			<if test="createTimeEnd!=null and createTimeEnd!=''">
+				AND Company.createTime &lt;= date_format(#{createTimeEnd},'%Y-%m-%d 23:59:59')
+			</if>
+			<if test="longnum!=null and longnum >=0 ">
+			 	AND Company.id = #{longnum}
+			</if>
+    	</where> 
+    </select>
+    
+    <resultMap type="component" id="unionComponentListMap"> 
+    	<id property="id" column="id" />
+		<association property="controls" column="componentcontrols_id" javaType="controls">
+			<id property="id" column="controlsid"/>
+			<result property="name" column="controlsname"/>
+		</association>
+    </resultMap>
+    <select id="unionComponentList" parameterType="int" resultMap="unionComponentListMap">
+		SELECT
+			Component.id,
+			Component.name,
+			Component.controls_id,
+			Controls.id AS controlsid,
+			Controls.name AS controlsname
+		FROM
+			Component
+		LEFT OUTER JOIN Company_Component ON Component.id = Company_Component.component_id
+		LEFT OUTER JOIN Controls ON Component.controls_id = Controls.id
+		WHERE Company_Component.company_id = #{id}
+    </select>
+    
+    <select id="getSingle" parameterType="company" resultType="company">
+		SELECT * FROM Company WHERE Company.id = #{id}
+    </select>
+    
+    <update id="update" parameterType="company">
+		update Company
+		 <set>     
+	        <if test="name!=null and name!='' ">     
+	            Company.name = #{name},      
+	        </if>     
+	        <if test="createTime!=null and createTime!='' ">     
+	            Company.createTime = #{createTime},      
+	        </if>     
+	    </set>
+		where Company.id = #{id}
+	</update>
+	
+	<delete id="delete" parameterType="company">
+		delete from Company where id = #{id} 
+	</delete>
+</mapper>

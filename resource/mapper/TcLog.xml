@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcLogMapper" >
+
+<!-- 浏览页面所用到的查询 -->
+<select id="listPage" parameterType="java.util.Map" resultType="tcLog">
+	SELECT TcLog.id,TcLog.content,TcLog.operateTime,GROUP_CONCAT(DISTINCT date_format(TcOrder.orderTime,'%Y-%m-%d')) as orderTime,TcUser.name as tcUserName,TcLog.tcUser_id,TcOrder.number as tcOrderNumber,TcLog.tcOrder_id
+	FROM TcLog LEFT OUTER JOIN TcOrder ON TcLog.tcOrder_id = TcOrder.id LEFT OUTER JOIN TcUser ON TcLog.tcUser_id = TcUser.id
+	<where>
+		TcLog.flag = 1 
+		<if test="operateTimeStart!=null and operateTimeStart!=''">AND TcLog.operateTime &gt;= date_format(#{operateTimeStart},'%Y-%m-%d 00:00:00')</if>
+		<if test="operateTimeEnd!=null and operateTimeEnd!=''">AND TcLog.operateTime &lt;= date_format(#{operateTimeEnd},'%Y-%m-%d 23:59:59')</if>
+		<if test="tcUser_id!=null and tcUser_id >=0 ">AND TcLog.tcUser_id = #{tcUser_id}</if>
+	</where> 
+
+		GROUP BY TcLog.id
+		
+</select>
+
+<!-- 详细页面所用到的查询 -->
+<select id="getSingle" parameterType="tcLog" resultType="tcLog">
+	SELECT TcLog.*,TcUser.name as tcUserName,TcLog.tcUser_id,GROUP_CONCAT(DISTINCT date_format(TcOrder.orderTime,'%Y-%m-%d')) as orderTime,TcOrder.number as tcOrderNumber,TcLog.tcOrder_id
+	FROM TcLog LEFT OUTER JOIN TcOrder ON TcLog.tcOrder_id = TcOrder.id LEFT OUTER JOIN TcUser ON TcLog.tcUser_id = TcUser.id
+	WHERE TcLog.id=#{id}
+		GROUP BY TcLog.id
+		
+</select>
+
+<!-- 关联实体中所用到的查询 -->
+	<select id="selectTcUserName" resultType="tcLog" >
+SELECT TcUser.id, TcUser.name AS tcUserName
+FROM TcUser
+WHERE flag = '1'
+</select>
+<select id="selectTcOrderNumber" resultType="tcLog" >
+SELECT TcOrder.id, TcOrder.number AS tcOrderNumber
+FROM TcOrder
+WHERE flag = '1'
+</select>
+
+
+<insert id="insert" parameterType="tcLog" useGeneratedKeys="true" keyProperty="id">  
+	insert into TcLog (receiveId,type,tcUser_id,operateTime,tcOrder_id,content,startId) values(#{receiveId},#{type},#{tcUser_id},#{operateTime},#{tcOrder_id},#{content},#{startId})
+</insert>
+
+
+
+
+<!-- 物理删除时的方法 -->
+<delete id="delete" parameterType="tcLog">
+	delete from TcLog where id=#{id} 
+</delete>
+
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcOrderMapper" >
+
+<!-- 浏览页面所用到的查询 -->
+<select id="listPage" parameterType="java.util.Map" resultType="tcOrder">
+	SELECT TcOrder.id,TcOrder.orderTime,TcOrder.stage,TcCourier.name as tcCourierName,TcOrder.tcCourier_id,TcOrder.courierNumber,TcUser.name as tcUserName,TcOrder.tcUser_id,TcOrder.orderType,TcCompany.name as tcCompanyName,TcOrder.tcCompany_id,TcOrder.number
+	FROM TcOrder LEFT OUTER JOIN TcCourier ON TcOrder.tcCourier_id = TcCourier.id LEFT OUTER JOIN TcCompany ON TcOrder.tcCompany_id = TcCompany.id LEFT OUTER JOIN TcUser ON TcOrder.tcUser_id = TcUser.id
+	<where>
+		TcOrder.flag = 1 
+		<if test="tcCompany_id!=null and tcCompany_id >=0 ">AND TcOrder.tcCompany_id = #{tcCompany_id}</if>
+		<if test="orderTimeStart!=null and orderTimeStart!=''">AND TcOrder.orderTime &gt;= date_format(#{orderTimeStart},'%Y-%m-%d 00:00:00')</if>
+		<if test="orderTimeEnd!=null and orderTimeEnd!=''">AND TcOrder.orderTime &lt;= date_format(#{orderTimeEnd},'%Y-%m-%d 23:59:59')</if>
+	</where> 
+
+		GROUP BY TcOrder.id
+		
+</select>
+
+<!-- 详细页面所用到的查询 -->
+<select id="getSingle" parameterType="tcOrder" resultType="tcOrder">
+	SELECT TcOrder.*,TcUser.name as tcUserName,TcOrder.tcUser_id,TcCourier.name as tcCourierName,TcOrder.tcCourier_id,TcCompany.name as tcCompanyName,TcOrder.tcCompany_id
+	FROM TcOrder LEFT OUTER JOIN TcCourier ON TcOrder.tcCourier_id = TcCourier.id LEFT OUTER JOIN TcCompany ON TcOrder.tcCompany_id = TcCompany.id LEFT OUTER JOIN TcUser ON TcOrder.tcUser_id = TcUser.id
+	WHERE TcOrder.id=#{id}
+		GROUP BY TcOrder.id
+		
+</select>
+
+<!-- 关联实体中所用到的查询 -->
+	<select id="selectTcCourierName" resultType="tcOrder" >
+SELECT TcCourier.id, TcCourier.name AS tcCourierName
+FROM TcCourier
+WHERE flag = '1'
+</select>
+<select id="selectTcUserName" resultType="tcOrder" >
+SELECT TcUser.id, TcUser.name AS tcUserName
+FROM TcUser
+WHERE flag = '1'
+</select>
+<select id="selectTcCompanyName" resultType="tcOrder" >
+SELECT TcCompany.id, TcCompany.name AS tcCompanyName
+FROM TcCompany
+WHERE flag = '1'
+</select>
+
+
+<insert id="insert" parameterType="tcOrder" useGeneratedKeys="true" keyProperty="id">  
+	insert into TcOrder (tcUser_id,tcCourier_id,orderTime,tcCompany_id,number,courierNumber,orderType,stage) values(#{tcUser_id},#{tcCourier_id},#{orderTime},#{tcCompany_id},#{number},#{courierNumber},#{orderType},#{stage})
+</insert>
+
+
+
+<!-- 修改更新时所用到的方法 -->
+<update id="update" parameterType="tcOrder">
+	update TcOrder 
+	<set>
+			
+	<if test="tcUser_id!=null and tcUser_id!='' ">
+		tcUser_id=#{tcUser_id},
+	</if>
+		
+	<if test="tcCourier_id!=null and tcCourier_id!='' ">
+		tcCourier_id=#{tcCourier_id},
+	</if>
+		
+	<if test="orderTime!=null and orderTime!='' ">
+		orderTime=#{orderTime},
+	</if>
+		
+	<if test="tcCompany_id!=null and tcCompany_id!='' ">
+		tcCompany_id=#{tcCompany_id},
+	</if>
+		
+	<if test="number!=null and number!='' ">
+		number=#{number},
+	</if>
+		
+	<if test="courierNumber!=null and courierNumber!='' ">
+		courierNumber=#{courierNumber},
+	</if>
+		
+	<if test="orderType!=null and orderType!='' ">
+		orderType=#{orderType},
+	</if>
+		
+	<if test="stage!=null and stage!='' ">
+		stage=#{stage},
+	</if>
+	
+	</set>
+	where TcOrder.id=#{id}
+</update>
+
+<!-- 物理删除时的方法 -->
+<delete id="delete" parameterType="tcOrder">
+	delete from TcOrder where id=#{id} 
+</delete>
+
+</mapper>

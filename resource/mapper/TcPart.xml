@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcPartMapper" >
+
+<!-- 浏览页面所用到的查询 -->
+<select id="listPage" parameterType="java.util.Map" resultType="tcPart">
+	SELECT TcPart.id,TcPart.name,GROUP_CONCAT(DISTINCT TcPower.name) as tcPowerName
+	FROM TcPart LEFT OUTER JOIN TcPower_TcPart ON TcPart.id = TcPower_TcPart.tcPart_id LEFT OUTER JOIN TcPower ON TcPower_TcPart.tcPower_id = TcPower.id
+	<where>
+		TcPart.flag = 1 
+		<if test="name!=null and name !='' ">AND TcPart.name LIKE CONCAT(CONCAT('%', #{name}),'%')</if>
+	</where> 
+
+		GROUP BY TcPart.id
+		
+</select>
+
+<!-- 详细页面所用到的查询 -->
+<select id="getSingle" parameterType="tcPart" resultType="tcPart">
+	SELECT TcPart.*,GROUP_CONCAT(DISTINCT TcPower.name) as tcPowerName
+	FROM TcPart LEFT OUTER JOIN TcPower_TcPart ON TcPart.id = TcPower_TcPart.tcPart_id LEFT OUTER JOIN TcPower ON TcPower_TcPart.tcPower_id = TcPower.id
+	WHERE TcPart.id=#{id}
+		GROUP BY TcPart.id
+		
+</select>
+
+<!-- 关联实体中所用到的查询 -->
+	
+<select id="selectTcPowerName" resultType="tcPart">
+SELECT TcPower.id,TcPower.name AS tcPowerName
+FROM TcPower
+WHERE TcPower.flag = 1
+</select>
+
+<select id="selectTcPowerList" resultType="tcPart" parameterType="tcPart">
+SELECT TcPower.id,TcPower.name AS tcPowerName
+FROM TcPower_TcPart LEFT OUTER JOIN TcPower ON TcPower_TcPart.tcPower_id = TcPower.id
+WHERE TcPower.flag = 1 and TcPower_TcPart.tcPart_id = #{id}
+</select>
+
+
+<insert id="insert" parameterType="tcPart" useGeneratedKeys="true" keyProperty="id">  
+	insert into TcPart (name) values(#{name})
+</insert>
+
+
+<insert id="insertTcPower_TcPart" parameterType="tcPart">
+	  insert into TcPower_TcPart(tcPower_id,tcPart_id) values(#{tcPower_id},#{id})
+</insert>
+
+<!-- 修改更新时所用到的方法 -->
+<update id="update" parameterType="tcPart">
+	update TcPart 
+	<set>
+			
+	<if test="name!=null and name!='' ">
+		name=#{name},
+	</if>
+	
+	</set>
+	where TcPart.id=#{id}
+</update>
+
+<!-- 物理删除时的方法 -->
+<delete id="delete" parameterType="tcPart">
+	delete from TcPart where id=#{id} 
+</delete>
+<!-- 删除级联更新用 -->
+<delete id="deleteTcPower_TcPartByTcPart" parameterType="tcPart">
+	  delete from TcPower_TcPart where TcPart_id=#{id}
+</delete>
+
+</mapper>

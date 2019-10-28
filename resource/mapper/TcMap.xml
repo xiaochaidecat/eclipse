@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcMapMapper" >
+
+<select id="getTcMapListByMapId" parameterType="Integer" resultType="tcMap">
+SELECT * FROM tcmap where mapid = #{tcMapUserId}
+</select>
+
+<select id="getMapByMapId" parameterType="Integer" resultType="tcMap">
+select * from tcmap where mapid = #{id}
+</select>
+
+<insert id="addMap" parameterType="tcMap">
+insert into tcmap (node_longitude,node_latitude,mapid) values ('${node_longitude}','${node_latitude}',#{mapId});
+</insert>
+</mapper>

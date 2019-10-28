@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcSignMapper" >
+
+<!-- 浏览页面所用到的查询 -->
+<select id="listPage" parameterType="java.util.Map" resultType="tcSign">
+	SELECT TcSign.id,TcSign.createTime,TcUser.name as tcUserName,TcSign.tcUser_id,TcSign.state
+	FROM TcSign LEFT OUTER JOIN TcUser ON TcSign.tcUser_id = TcUser.id
+	<where>
+		TcSign.flag = 1 
+		<if test="tcUser_id!=null and tcUser_id >=0 ">AND TcSign.tcUser_id = #{tcUser_id}</if>
+		<if test="createTimeStart!=null and createTimeStart!=''">AND TcSign.createTime &gt;= date_format(#{createTimeStart},'%Y-%m-%d 00:00:00')</if>
+		<if test="createTimeEnd!=null and createTimeEnd!=''">AND TcSign.createTime &lt;= date_format(#{createTimeEnd},'%Y-%m-%d 23:59:59')</if>
+		<if test="state!=null and state !='' ">AND TcSign.state LIKE CONCAT(CONCAT('%', #{state}),'%')</if>
+	</where> 
+
+		GROUP BY TcSign.id
+		
+</select>
+
+<!-- 详细页面所用到的查询 -->
+<select id="getSingle" parameterType="tcSign" resultType="tcSign">
+	SELECT TcSign.*,TcUser.name as tcUserName,TcSign.tcUser_id
+	FROM TcSign LEFT OUTER JOIN TcUser ON TcSign.tcUser_id = TcUser.id
+	WHERE TcSign.id=#{id}
+		GROUP BY TcSign.id
+		
+</select>
+
+<!-- 关联实体中所用到的查询 -->
+	<select id="selectTcUserName" resultType="tcSign" >
+SELECT TcUser.id, TcUser.name AS tcUserName
+FROM TcUser
+WHERE flag = '1'
+</select>
+
+
+<insert id="insert" parameterType="tcSign" useGeneratedKeys="true" keyProperty="id">  
+	insert into TcSign (createTime,tcUser_id,state) values(#{createTime},#{tcUser_id},#{state})
+</insert>
+
+
+
+<!-- 修改更新时所用到的方法 -->
+<update id="update" parameterType="tcSign">
+	update TcSign 
+	<set>
+			
+	<if test="createTime!=null and createTime!='' ">
+		createTime=#{createTime},
+	</if>
+		
+	<if test="tcUser_id!=null and tcUser_id!='' ">
+		tcUser_id=#{tcUser_id},
+	</if>
+		
+	<if test="state!=null and state!='' ">
+		state=#{state},
+	</if>
+	
+	</set>
+	where TcSign.id=#{id}
+</update>
+
+<!-- 物理删除时的方法 -->
+<delete id="delete" parameterType="tcSign">
+	delete from TcSign where id=#{id} 
+</delete>
+
+</mapper>

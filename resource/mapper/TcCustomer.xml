@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcCustomerMapper" >
+
+<!-- 浏览页面所用到的查询 -->
+<select id="listPage" parameterType="java.util.Map" resultType="tcCustomer">
+	SELECT TcCustomer.id,TcCustomer.telephone,TcCustomer.createTime,TcCustomer.name,GROUP_CONCAT(DISTINCT TcCompany.name) as tcCompanyName
+	FROM TcCustomer LEFT OUTER JOIN TcCompany_TcCustomer ON TcCustomer.id = TcCompany_TcCustomer.tcCustomer_id LEFT OUTER JOIN TcCompany ON TcCompany_TcCustomer.tcCompany_id = TcCompany.id
+	<where>
+		TcCustomer.flag = 1 
+		<if test="tcCompanyname!=null and tcCompanyname !='' ">AND TcCompany.name LIKE CONCAT(CONCAT('%', #{tcCompanyname}),'%')</if>
+		<if test="telephone!=null and telephone !='' ">AND TcCustomer.telephone LIKE CONCAT(CONCAT('%', #{telephone}),'%')</if>
+		<if test="createTimeStart!=null and createTimeStart!=''">AND TcCustomer.createTime &gt;= date_format(#{createTimeStart},'%Y-%m-%d 00:00:00')</if>
+		<if test="createTimeEnd!=null and createTimeEnd!=''">AND TcCustomer.createTime &lt;= date_format(#{createTimeEnd},'%Y-%m-%d 23:59:59')</if>
+		<if test="name!=null and name !='' ">AND TcCustomer.name LIKE CONCAT(CONCAT('%', #{name}),'%')</if>
+	</where> 
+
+		GROUP BY TcCustomer.id
+		
+</select>
+
+<!-- 详细页面所用到的查询 -->
+<select id="getSingle" parameterType="tcCustomer" resultType="tcCustomer">
+	SELECT TcCustomer.*,GROUP_CONCAT(DISTINCT TcCompany.name) as tcCompanyName
+	FROM TcCustomer LEFT OUTER JOIN TcCompany_TcCustomer ON TcCustomer.id = TcCompany_TcCustomer.tcCustomer_id LEFT OUTER JOIN TcCompany ON TcCompany_TcCustomer.tcCompany_id = TcCompany.id
+	WHERE TcCustomer.id=#{id}
+		GROUP BY TcCustomer.id
+		
+</select>
+
+<!-- 关联实体中所用到的查询 -->
+	
+<select id="selectTcCompanyName" resultType="tcCustomer">
+SELECT TcCompany.id,TcCompany.name AS tcCompanyName
+FROM TcCompany
+WHERE TcCompany.flag = 1
+</select>
+
+<select id="selectTcCompanyList" resultType="tcCustomer" parameterType="tcCustomer">
+SELECT TcCompany.id,TcCompany.name AS tcCompanyName
+FROM TcCompany_TcCustomer LEFT OUTER JOIN TcCompany ON TcCompany_TcCustomer.tcCompany_id = TcCompany.id
+WHERE TcCompany.flag = 1 and TcCompany_TcCustomer.tcCustomer_id = #{id}
+</select>
+
+
+<insert id="insert" parameterType="tcCustomer" useGeneratedKeys="true" keyProperty="id">  
+	insert into TcCustomer (name,telephone,createTime) values(#{name},#{telephone},#{createTime})
+</insert>
+
+
+<insert id="insertTcCompany_TcCustomer" parameterType="tcCustomer">
+	  insert into TcCompany_TcCustomer(tcCompany_id,tcCustomer_id) values(#{tcCompany_id},#{id})
+</insert>
+
+<!-- 修改更新时所用到的方法 -->
+<update id="update" parameterType="tcCustomer">
+	update TcCustomer 
+	<set>
+			
+	<if test="name!=null and name!='' ">
+		name=#{name},
+	</if>
+		
+	<if test="telephone!=null and telephone!='' ">
+		telephone=#{telephone},
+	</if>
+		
+	<if test="createTime!=null and createTime!='' ">
+		createTime=#{createTime},
+	</if>
+	
+	</set>
+	where TcCustomer.id=#{id}
+</update>
+
+<!-- 物理删除时的方法 -->
+<delete id="delete" parameterType="tcCustomer">
+	delete from TcCustomer where id=#{id} 
+</delete>
+<!-- 删除级联更新用 -->
+<delete id="deleteTcCompany_TcCustomerByTcCustomer" parameterType="tcCustomer">
+	  delete from TcCompany_TcCustomer where TcCustomer_id=#{id}
+</delete>
+
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcCompanyMapper" >
+
+<!-- 浏览页面所用到的查询 -->
+<select id="listPage" parameterType="java.util.Map" resultType="tcCompany">
+	SELECT TcCompany.id,GROUP_CONCAT(DISTINCT TcCustomer.name) as tcCustomerName,GROUP_CONCAT(DISTINCT TcCustomer.telephone) as tcCustomerTelephone,TcCompany.name
+	FROM TcCompany LEFT OUTER JOIN TcCompany_TcCustomer ON TcCompany.id = TcCompany_TcCustomer.tcCompany_id LEFT OUTER JOIN TcCustomer ON TcCompany_TcCustomer.tcCustomer_id = TcCustomer.id
+	<where>
+		TcCompany.flag = 1 
+		<if test="name!=null and name !='' ">AND TcCompany.name LIKE CONCAT(CONCAT('%', #{name}),'%')</if>
+	</where> 
+
+		GROUP BY TcCompany.id
+		
+</select>
+
+<!-- 详细页面所用到的查询 -->
+<select id="getSingle" parameterType="tcCompany" resultType="tcCompany">
+	SELECT TcCompany.*,GROUP_CONCAT(DISTINCT TcCustomer.name) as tcCustomerName,GROUP_CONCAT(DISTINCT TcCustomer.telephone) as tcCustomerTelephone
+	FROM TcCompany LEFT OUTER JOIN TcCompany_TcCustomer ON TcCompany.id = TcCompany_TcCustomer.tcCompany_id LEFT OUTER JOIN TcCustomer ON TcCompany_TcCustomer.tcCustomer_id = TcCustomer.id
+	WHERE TcCompany.id=#{id}
+		GROUP BY TcCompany.id
+		
+</select>
+
+<!-- 关联实体中所用到的查询 -->
+	
+<select id="selectTcCustomerName" resultType="tcCompany">
+SELECT TcCustomer.id,TcCustomer.name AS tcCustomerName
+FROM TcCustomer
+WHERE TcCustomer.flag = 1
+</select>
+
+<select id="selectTcCustomerList" resultType="tcCompany" parameterType="tcCompany">
+SELECT TcCustomer.id,TcCustomer.name AS tcCustomerName
+FROM TcCompany_TcCustomer LEFT OUTER JOIN TcCustomer ON TcCompany_TcCustomer.tcCustomer_id = TcCustomer.id
+WHERE TcCustomer.flag = 1 and TcCompany_TcCustomer.tcCompany_id = #{id}
+</select>
+
+
+<insert id="insert" parameterType="tcCompany" useGeneratedKeys="true" keyProperty="id">  
+	insert into TcCompany (licenseCode,location,name,telephone,info,legal,officeAddress,createTime) values(#{licenseCode},#{location},#{name},#{telephone},#{info},#{legal},#{officeAddress},#{createTime})
+</insert>
+
+
+<insert id="insertTcCompany_TcCustomer" parameterType="tcCompany">
+	  insert into TcCompany_TcCustomer(tcCustomer_id,tcCompany_id) values(#{tcCustomer_id},#{id})
+</insert>
+
+<!-- 修改更新时所用到的方法 -->
+<update id="update" parameterType="tcCompany">
+	update TcCompany 
+	<set>
+			
+	<if test="licenseCode!=null and licenseCode!='' ">
+		licenseCode=#{licenseCode},
+	</if>
+		
+	<if test="location!=null and location!='' ">
+		location=#{location},
+	</if>
+		
+	<if test="name!=null and name!='' ">
+		name=#{name},
+	</if>
+		
+	<if test="telephone!=null and telephone!='' ">
+		telephone=#{telephone},
+	</if>
+		
+	<if test="info!=null and info!='' ">
+		info=#{info},
+	</if>
+		
+	<if test="legal!=null and legal!='' ">
+		legal=#{legal},
+	</if>
+		
+	<if test="officeAddress!=null and officeAddress!='' ">
+		officeAddress=#{officeAddress},
+	</if>
+		
+	<if test="createTime!=null and createTime!='' ">
+		createTime=#{createTime},
+	</if>
+	
+	</set>
+	where TcCompany.id=#{id}
+</update>
+
+<!-- 物理删除时的方法 -->
+<delete id="delete" parameterType="tcCompany">
+	delete from TcCompany where id=#{id} 
+</delete>
+<!-- 删除级联更新用 -->
+<delete id="deleteTcCompany_TcCustomerByTcCompany" parameterType="tcCompany">
+	  delete from TcCompany_TcCustomer where TcCompany_id=#{id}
+</delete>
+
+</mapper>

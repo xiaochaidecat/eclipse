@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcReasonMapper" >
+
+<!-- 浏览页面所用到的查询 -->
+<select id="listPage" parameterType="java.util.Map" resultType="tcReason">
+	SELECT TcReason.id,TcReason.state,TcReason.type,TcOrder.stage as tcOrderStage,TcReason.tcOrder_id,TcUser.name as tcUserName,TcReason.tcUser_id,TcReason.content,TcReason.receiveName
+	FROM TcReason LEFT OUTER JOIN TcOrder ON TcReason.tcOrder_id = TcOrder.id LEFT OUTER JOIN TcUser ON TcReason.tcUser_id = TcUser.id
+	<where>
+		TcReason.flag = 1 
+		<if test="state!=null and state !='' ">AND TcReason.state LIKE CONCAT(CONCAT('%', #{state}),'%')</if>
+		<if test="receiveName!=null and receiveName !='' ">AND TcReason.receiveName LIKE CONCAT(CONCAT('%', #{receiveName}),'%')</if>
+	</where> 
+
+		GROUP BY TcReason.id
+		
+</select>
+
+<!-- 详细页面所用到的查询 -->
+<select id="getSingle" parameterType="tcReason" resultType="tcReason">
+	SELECT TcReason.*,TcUser.name as tcUserName,TcReason.tcUser_id,TcOrder.stage as tcOrderStage,TcReason.tcOrder_id
+	FROM TcReason LEFT OUTER JOIN TcOrder ON TcReason.tcOrder_id = TcOrder.id LEFT OUTER JOIN TcUser ON TcReason.tcUser_id = TcUser.id
+	WHERE TcReason.id=#{id}
+		GROUP BY TcReason.id
+		
+</select>
+
+<!-- 关联实体中所用到的查询 -->
+	<select id="selectTcOrderStage" resultType="tcReason" >
+SELECT TcOrder.id, TcOrder.stage AS tcOrderStage
+FROM TcOrder
+WHERE flag = '1'
+</select>
+<select id="selectTcUserName" resultType="tcReason" >
+SELECT TcUser.id, TcUser.name AS tcUserName
+FROM TcUser
+WHERE flag = '1'
+</select>
+
+
+<insert id="insert" parameterType="tcReason" useGeneratedKeys="true" keyProperty="id">  
+	insert into TcReason (type,content,tcUser_id,state,tcOrder_id,receiveName) values(#{type},#{content},#{tcUser_id},#{state},#{tcOrder_id},#{receiveName})
+</insert>
+
+
+
+<!-- 修改更新时所用到的方法 -->
+<update id="update" parameterType="tcReason">
+	update TcReason 
+	<set>
+			
+	<if test="type!=null and type!='' ">
+		type=#{type},
+	</if>
+		
+	<if test="tcUser_id!=null and tcUser_id!='' ">
+		tcUser_id=#{tcUser_id},
+	</if>
+		
+	<if test="receiveName!=null and receiveName!='' ">
+		receiveName=#{receiveName},
+	</if>
+		
+	<if test="content!=null and content!='' ">
+		content=#{content},
+	</if>
+		
+	<if test="state!=null and state!='' ">
+		state=#{state},
+	</if>
+		
+	<if test="tcOrder_id!=null and tcOrder_id!='' ">
+		tcOrder_id=#{tcOrder_id},
+	</if>
+	
+	</set>
+	where TcReason.id=#{id}
+</update>
+
+<!-- 物理删除时的方法 -->
+<delete id="delete" parameterType="tcReason">
+	delete from TcReason where id=#{id} 
+</delete>
+
+</mapper>

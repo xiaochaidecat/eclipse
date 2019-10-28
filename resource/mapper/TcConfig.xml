@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.i5jie.ticket.dao.TcConfigMapper" >
+
+<!-- 浏览页面所用到的查询 -->
+<select id="listPage" parameterType="java.util.Map" resultType="tcConfig">
+	SELECT TcConfig.id,TcConfig.configValue,TcConfig.configKey,TcConfig.type,TcConfig.name
+	FROM TcConfig
+	<where>
+		TcConfig.flag = 1 
+		<if test="configKey!=null and configKey !='' ">AND TcConfig.configKey LIKE CONCAT(CONCAT('%', #{configKey}),'%')</if>
+		<if test="name!=null and name !='' ">AND TcConfig.name LIKE CONCAT(CONCAT('%', #{name}),'%')</if>
+	</where> 
+
+		
+</select>
+
+<!-- 详细页面所用到的查询 -->
+<select id="getSingle" parameterType="tcConfig" resultType="tcConfig">
+	SELECT TcConfig.*
+	FROM TcConfig
+	WHERE TcConfig.id=#{id}
+		
+</select>
+
+
+<insert id="insert" parameterType="tcConfig" useGeneratedKeys="true" keyProperty="id">  
+	insert into TcConfig (name,configValue,configKey,type) values(#{name},#{configValue},#{configKey},#{type})
+</insert>
+
+
+
+<!-- 修改更新时所用到的方法 -->
+<update id="update" parameterType="tcConfig">
+	update TcConfig 
+	<set>
+			
+	<if test="name!=null and name!='' ">
+		name=#{name},
+	</if>
+		
+	<if test="configValue!=null and configValue!='' ">
+		configValue=#{configValue},
+	</if>
+		
+	<if test="configKey!=null and configKey!='' ">
+		configKey=#{configKey},
+	</if>
+		
+	<if test="type!=null and type!='' ">
+		type=#{type},
+	</if>
+	
+	</set>
+	where TcConfig.id=#{id}
+</update>
+
+<!-- 物理删除时的方法 -->
+<delete id="delete" parameterType="tcConfig">
+	delete from TcConfig where id=#{id} 
+</delete>
+
+</mapper>

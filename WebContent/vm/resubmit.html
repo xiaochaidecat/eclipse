@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		#parse("include/header.html" )
+	</head>
+	
+	<body class="page-header-fixed" style="background-color: #ffffff !important;">
+	
+		<!-- BEGIN HEADER -->
+		
+		
+		<!-- END HEADER -->
+		
+		<!-- BEGIN CONTAINER -->   
+	
+		<div class="page-container-model row-fluid" style="background-color: #ffffff">
+
+			<!-- BEGIN SIDEBAR -->
+			<!-- END SIDEBAR -->
+			
+			<!-- BEGIN PAGE -->
+	
+			<div class="page-content" style="margin-left: 0;">
+	
+				<!-- BEGIN PAGE CONTAINER-->
+	
+				<div class="container-fluid">
+	
+					<!-- BEGIN PAGE HEADER-->
+	
+					<div class="row-fluid">
+	
+						<div class="span12">
+	
+							<!-- BEGIN PAGE TITLE & BREADCRUMB-->
+	
+							<h3 class="page-title">
+	
+								重复提交 <small>防重复提交功能</small>
+	
+							</h3>
+	
+							<!-- END PAGE TITLE & BREADCRUMB-->
+							<div class="row-fluid">
+
+								<div class="span12">
+			
+									<!-- BEGIN ALERTS PORTLET-->
+			
+									<div class="portlet ">
+			
+										<div class="portlet-title">
+			
+											<div class="caption"></div>
+			
+										</div>
+			
+										<div class="portlet-body">
+			
+											<div class="alert alert-error">
+			
+												<strong>对不起，请勿重复执行提交操作!</strong>
+												<div align="right">
+													<a href="javascript:history.go(-1)">返回上一步</a>
+													
+													<a href="$ctx">返回首页</a>
+												</div>
+											</div>
+			
+										</div>
+			
+									</div>
+			
+									<!-- END ALERTS PORTLET-->
+			
+								</div>
+			
+							</div>
+						</div>
+	
+					</div>
+	
+					<!-- END PAGE HEADER-->
+	
+				</div>
+	
+				<!-- END PAGE CONTAINER--> 
+	
+			</div>
+			
+			<!-- END PAGE -->    
+	
+		</div>
+	
+		<!-- END CONTAINER -->
+	
+		<!-- BEGIN FOOTER -->
+	
+		#parse("include/footer.html")
+	
+		<!-- END FOOTER -->
+	
+	</body>
+</html>

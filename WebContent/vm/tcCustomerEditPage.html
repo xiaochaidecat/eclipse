@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		#parse("include/header.html" )
+	</head>
+	
+	<body class="page-header-fixed">
+	
+		<!-- BEGIN HEADER -->
+		
+		#parse("include/nav.html" )
+		
+		<!-- END HEADER -->
+		
+		<!-- BEGIN CONTAINER -->   
+	
+		<div class="page-container row-fluid">
+	
+			<!-- BEGIN SIDEBAR -->
+			#parse("include/menu.html")
+			<!-- END SIDEBAR -->
+			
+			<!-- BEGIN PAGE -->
+	
+			<div class="page-content">
+	
+				<!-- BEGIN PAGE CONTAINER-->
+				<form id="tcCustomerEditForm" name="tcCustomerEditForm" method="post" action="$ctx/tcCustomer/tcCustomerEdit" class="form-horizontal form-bordered form-label-stripped">
+				<input type="hidden" id="token" name="token" value="$!uri@$!{tokensMap.get($!uri)}">
+				<input type="hidden" id="id" name="id" value="$!tcCustomer.id"/>
+				<div class="container-fluid">
+	
+					<div class="row-fluid">
+						<div class="span12">
+							<h4 class="page-title">标题 <small>标题</small></h4>
+						</div>
+					</div>
+	
+					<!-- END PAGE HEADER-->
+	
+					<!-- BEGIN PAGE CONTENT-->
+	
+					<div class="row-fluid">
+	
+						<div class="span12">
+	
+							<!-- BEGIN SAMPLE FORM PORTLET-->   
+	
+							<div class="portlet box defind tabbable">
+								<div class="portlet-title">
+									<div class="caption">
+										<i class="icon-reorder"></i>
+										<span class="hidden-480">填写信息</span>
+									</div>
+								</div>
+	
+								<div class="portlet-body form">
+																		
+									<div class="control-group">
+										<label class="control-label">客户名称：</label>
+										<div class="controls">
+																				
+												<input type="text" id="name" name="name" value="$!tcCustomer.name" />
+																																								
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">电话：</label>
+										<div class="controls">
+																				
+												<input type="text" id="telephone" name="telephone" value="$!tcCustomer.telephone" />
+																																								
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">创建时间：</label>
+										<div class="controls">
+																																								
+												<div class="input-append">
+													<input type="text" id="createTime" name="createTime" readonly = "readonly"  value="$!date.format('yyyy-MM-dd HH:mm:ss ',$!tcCustomer.createTime)"/>
+													<span class="add-on" onclick="WdatePicker({el:'createTime'})" ><i class="icon-calendar"></i></span>
+												</div>
+																				
+										</div>
+	
+									</div>
+																																							
+									<div class="control-group">
+										<label class="control-label">公司名称: </label>
+										<div class="controls">
+											#foreach($tcCompany in $tcCompanyList)
+												<div class="checkbox inline">
+													<label>
+														#set($ischeck = false)
+														#foreach($tcCompanyValue in $tcCompanyValueList)
+															#if($tcCompanyValue.id == $tcCompany.id)
+															#set($ischeck = true)
+															#end
+														#end
+														<input name="tcCompany_id" type="checkbox" class="ace" value="$tcCompany.id" #if($ischeck == true)checked="checked" #end/>
+														<span class="lbl"> ${tcCompany.tcCompanyName}</span>
+													</label>
+												</div>
+											#end
+										</div>
+									</div>
+									
+																		
+									<div class="form-actions">
+	
+										<button type="submit" class="btn black"><i class="icon-ok"></i> 保存</button>
+	
+										<button type="reset" class="btn">重置</button>
+									</div>
+	
+								</div>
+	
+							</div>
+	
+						</div>
+	
+					</div>
+				</form>
+					<!-- END PAGE CONTENT-->
+	
+				</div>
+	
+				<!-- END PAGE CONTAINER-->
+
+	
+			</div>
+			
+			<!-- END PAGE -->    
+	
+		</div>
+	
+		<!-- END CONTAINER -->
+	
+		<!-- BEGIN FOOTER -->
+		#parse("include/bottom.html")
+		#parse("include/footer.html")
+	
+		<!-- END FOOTER -->
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#tcCustomerEditForm").validationEngine('attach', {
+			    promptPosition: "topLeft",
+			    scroll: false
+			});
+			
+		});
+		</script>
+	</body>
+</html>

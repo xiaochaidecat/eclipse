@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		#parse("include/header.html" )
+	</head>
+	
+	<body class="page-header-fixed">
+	
+		<!-- BEGIN HEADER -->
+		
+		#parse("include/nav.html" )
+		
+		<!-- END HEADER -->
+		
+		<!-- BEGIN CONTAINER -->   
+	
+		<div class="page-container row-fluid">
+	
+			<!-- BEGIN SIDEBAR -->
+			#parse("include/menu.html")
+			<!-- END SIDEBAR -->
+			
+			<!-- BEGIN PAGE -->
+	
+			<div class="page-content">
+	
+				<!-- BEGIN PAGE CONTAINER-->
+				<form id="tcOrderEditForm" name="tcOrderEditForm" method="post" action="$ctx/tcOrder/tcOrderEdit" class="form-horizontal form-bordered form-label-stripped">
+				<input type="hidden" id="token" name="token" value="$!uri@$!{tokensMap.get($!uri)}">
+				<input type="hidden" id="id" name="id" value="$!tcOrder.id"/>
+				<div class="container-fluid">
+	
+					<div class="row-fluid">
+						<div class="span12">
+							<h4 class="page-title">标题 <small>标题</small></h4>
+						</div>
+					</div>
+	
+					<!-- END PAGE HEADER-->
+	
+					<!-- BEGIN PAGE CONTENT-->
+	
+					<div class="row-fluid">
+	
+						<div class="span12">
+	
+							<!-- BEGIN SAMPLE FORM PORTLET-->   
+	
+							<div class="portlet box defind tabbable">
+								<div class="portlet-title">
+									<div class="caption">
+										<i class="icon-reorder"></i>
+										<span class="hidden-480">填写信息</span>
+									</div>
+								</div>
+	
+								<div class="portlet-body form">
+																		
+									<div class="control-group">
+										<label class="control-label">名字：</label>
+										<div class="controls">
+																														
+												<select id="tcUser_id" name="tcUser_id" >
+													<option value="-1">请选择</option>
+													#foreach( $tcUserName in $tcUserNameList)
+													<option value="$tcUserName.id" #if($tcOrder.tcUser_id == $tcUserName.id) selected="selected" #end>${tcUserName.tcUserName}</option>
+													#end
+												</select>
+																														
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">快递名：</label>
+										<div class="controls">
+																														
+												<select id="tcCourier_id" name="tcCourier_id" >
+													<option value="-1">请选择</option>
+													#foreach( $tcCourierName in $tcCourierNameList)
+													<option value="$tcCourierName.id" #if($tcOrder.tcCourier_id == $tcCourierName.id) selected="selected" #end>${tcCourierName.tcCourierName}</option>
+													#end
+												</select>
+																														
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">送票时间：</label>
+										<div class="controls">
+																																								
+												<div class="input-append">
+													<input type="text" id="orderTime" name="orderTime" readonly = "readonly"  value="$!date.format('yyyy-MM-dd HH:mm:ss ',$!tcOrder.orderTime)"/>
+													<span class="add-on" onclick="WdatePicker({el:'orderTime'})" ><i class="icon-calendar"></i></span>
+												</div>
+																				
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">公司名称：</label>
+										<div class="controls">
+																														
+												<select id="tcCompany_id" name="tcCompany_id" >
+													<option value="-1">请选择</option>
+													#foreach( $tcCompanyName in $tcCompanyNameList)
+													<option value="$tcCompanyName.id" #if($tcOrder.tcCompany_id == $tcCompanyName.id) selected="selected" #end>${tcCompanyName.tcCompanyName}</option>
+													#end
+												</select>
+																														
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">票数：</label>
+										<div class="controls">
+																				
+												<input type="text" id="number" name="number" value="$!tcOrder.number" />
+																																								
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">快递单号：</label>
+										<div class="controls">
+																				
+												<input type="text" id="courierNumber" name="courierNumber" value="$!tcOrder.courierNumber" />
+																																								
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">送票方式：</label>
+										<div class="controls">
+																				
+												<input type="text" id="orderType" name="orderType" value="$!tcOrder.orderType" />
+																																								
+										</div>
+	
+									</div>
+																		
+									<div class="control-group">
+										<label class="control-label">送票阶段：</label>
+										<div class="controls">
+																				
+												<input type="text" id="stage" name="stage" value="$!tcOrder.stage" />
+																																								
+										</div>
+	
+									</div>
+																		
+									<div class="form-actions">
+	
+										<button type="submit" class="btn black"><i class="icon-ok"></i> 保存</button>
+	
+										<button type="reset" class="btn">重置</button>
+									</div>
+	
+								</div>
+	
+							</div>
+	
+						</div>
+	
+					</div>
+				</form>
+					<!-- END PAGE CONTENT-->
+	
+				</div>
+	
+				<!-- END PAGE CONTAINER-->
+
+	
+			</div>
+			
+			<!-- END PAGE -->    
+	
+		</div>
+	
+		<!-- END CONTAINER -->
+	
+		<!-- BEGIN FOOTER -->
+		#parse("include/bottom.html")
+		#parse("include/footer.html")
+	
+		<!-- END FOOTER -->
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("#tcOrderEditForm").validationEngine('attach', {
+			    promptPosition: "topLeft",
+			    scroll: false
+			});
+			
+		});
+		</script>
+	</body>
+</html>
